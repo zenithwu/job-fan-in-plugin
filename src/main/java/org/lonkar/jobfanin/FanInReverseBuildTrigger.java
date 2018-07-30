@@ -55,7 +55,7 @@ public final class FanInReverseBuildTrigger extends Trigger<Job> implements Depe
 //	private transient DependencyGraph dependencyGraph;
 
 //	private static final String UPSTREAM_PROJECTS = "upstreamProjects";
-//	private static final String LOG_TAG = "[job-fan-in]";
+	private static final String LOG_TAG = "[job-fan-in]";
 //	private static final String TOKEN = "time_hour";
 //	public static List<Job> jobs;
 
@@ -123,18 +123,18 @@ public final class FanInReverseBuildTrigger extends Trigger<Job> implements Depe
 	{
 		ParametersAction downstreamAction = (ParametersAction)upstreamBuild.getAction(ParametersAction.class);
 
-		if (org.lonkar.jobfanin.bdp.Util.isEmpty(downstreamAction)) {
-			LOGGER.info("current project hasn't parameter and token:time_hour is needed.");
-			listener.getLogger().println("current project hasn't parameter and token:time_hour is needed.");
-			return false;
-		}
-		ParameterValue parameterValue = downstreamAction.getParameter("time_hour");
-
-		if (org.lonkar.jobfanin.bdp.Util.isEmpty(parameterValue)) {
-			LOGGER.info("current parameter token is null.");
-			listener.getLogger().println("current parameter token is null.please create token:time_hour");
-			return false;
-		}
+//		if (org.lonkar.jobfanin.bdp.Util.isEmpty(downstreamAction)) {
+//			LOGGER.info("current project hasn't parameter and token:time_hour is needed.");
+//			listener.getLogger().println("current project hasn't parameter and token:time_hour is needed.");
+//			return false;
+//		}
+//		ParameterValue parameterValue = downstreamAction.getParameter("time_hour");
+//
+//		if (org.lonkar.jobfanin.bdp.Util.isEmpty(parameterValue)) {
+//			LOGGER.info("current parameter token is null.");
+//			listener.getLogger().println("current parameter token is null.please create token:time_hour");
+//			return false;
+//		}
 
 		LOGGER.info("#######current project name:" + upstreamBuild.getFullDisplayName() + "######");
 		ArrayList runListTime = new ArrayList();
@@ -142,14 +142,14 @@ public final class FanInReverseBuildTrigger extends Trigger<Job> implements Depe
 			RunList<Run> runList = upstream.getNewBuilds();
 			int i = 0;
 			for (Run run : runList) {
-				ParametersAction action = run.getAction(ParametersAction.class);
+//				ParametersAction action = run.getAction(ParametersAction.class);
 
-				LOGGER.info("upstream project name:" + upstream.getName() + " parameter:" + action
-						.getParameter("time_hour") +
-						" result:" + run
-						.getResult());
+//				LOGGER.info("upstream project name:" + upstream.getName() + " parameter:" + action
+//						.getParameter("time_hour") +
+//						" result:" + run
+//						.getResult());
 
-				if ((parameterValue.equals(action.getParameter("time_hour"))) &&
+				if (
 						(null != run
 								.getResult()) &&
 						(run
@@ -167,12 +167,12 @@ public final class FanInReverseBuildTrigger extends Trigger<Job> implements Depe
 			}
 		}
 
-		this.action = ((ParametersAction)upstreamBuild.getAction(ParametersAction.class));
+		this.action = upstreamBuild.getAction(ParametersAction.class);
 		actions.add(this.action);
 		Long timeRun = Long.valueOf(upstreamBuild.getStartTimeInMillis() + upstreamBuild.getDuration());
 		String thisRunTime = timeRun.toString() + upstreamBuild.getFullDisplayName();
 		Collections.sort(runListTime);
-		if ((runListTime.size() > 0) && (!((String)runListTime.get(runListTime.size() - 1)).equals(thisRunTime))) {
+		if ((runListTime.size() > 0) && (!runListTime.get(runListTime.size() - 1).equals(thisRunTime))) {
 			LOGGER.warning(String.format(" thisRunTime:%s;\n runListTime:%s", new Object[] { thisRunTime, runListTime.toString() }));
 			return false;
 		}
